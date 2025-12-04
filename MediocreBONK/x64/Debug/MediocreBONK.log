@@ -1,0 +1,22 @@
+﻿  main.cpp
+C:\Users\natha\source\repos\MediocreBONK\MediocreBONK\src\Systems\SpawnSystem.h(117,31): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  (compiling source file 'src/main.cpp')
+  
+C:\Users\natha\source\repos\MediocreBONK\MediocreBONK\src\Systems\SpawnSystem.h(162,35): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  (compiling source file 'src/main.cpp')
+  
+C:\Users\natha\source\repos\MediocreBONK\MediocreBONK\src\Managers\AudioManager.h(91,42): warning C4101: 'e': unreferenced local variable
+  (compiling source file 'src/main.cpp')
+  
+C:\Users\natha\source\repos\MediocreBONK\MediocreBONK\src\UI\LevelUpMenu.h(106,61): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+  (compiling source file 'src/main.cpp')
+  
+C:\Users\natha\source\repos\MediocreBONK\MediocreBONK\src\States\GameState.h(323,46): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+  (compiling source file 'src/main.cpp')
+  
+C:\Users\natha\source\repos\MediocreBONK\MediocreBONK\src\States\GameState.h(361,55): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+  (compiling source file 'src/main.cpp')
+  
+  MediocreBONK.vcxproj -> C:\Users\natha\source\repos\MediocreBONK\x64\Debug\MediocreBONK.exe
+  'pwsh.exe' is not recognized as an internal or external command,
+  operable program or batch file.
