@@ -121,7 +121,7 @@ namespace MediocreBONK::Entities
             data.maxHealth = 10.f;
             data.speed = 150.f;
             data.damage = 5.f;
-            data.experienceValue = 5.f;
+            data.experienceValue = 1.f; 
             data.radius = 15.f;
             data.color = sf::Color(255, 100, 100); // Light red
             data.type = EnemyType::Light;
@@ -135,8 +135,8 @@ namespace MediocreBONK::Entities
             data.maxHealth = 30.f;
             data.speed = 100.f;
             data.damage = 10.f;
-            data.experienceValue = 15.f;
-            data.radius = 20.f;
+            data.experienceValue = 5.f; // Reduced from 15 for balanced progression
+            data.radius = 30.f;
             data.color = sf::Color(255, 150, 100); // Orange
             data.type = EnemyType::Medium;
             return data;
@@ -149,8 +149,8 @@ namespace MediocreBONK::Entities
             data.maxHealth = 100.f;
             data.speed = 50.f;
             data.damage = 20.f;
-            data.experienceValue = 50.f;
-            data.radius = 30.f;
+            data.experienceValue = 20.f; // Reduced from 50 for balanced progression
+            data.radius = 45.f;
             data.color = sf::Color(200, 50, 50); // Dark red
             data.type = EnemyType::Heavy;
             return data;
@@ -210,14 +210,14 @@ namespace MediocreBONK::Entities
             data.maxHealth *= 1.25f;
             data.speed *= 1.15f;
             data.damage *= 1.20f;
-            data.experienceValue *= 1.3f; // More XP to compensate
+            data.experienceValue *= 1.2f; // More XP to compensate
             break;
         case EnemyType::Heavy:
             // Heavy enemies: +50% health, +20% speed, +40% damage
             data.maxHealth *= 1.5f;
             data.speed *= 1.20f;
             data.damage *= 1.40f;
-            data.experienceValue *= 1.6f; // More XP to compensate
+            data.experienceValue *= 1.4f; // More XP to compensate
             break;
         }
 

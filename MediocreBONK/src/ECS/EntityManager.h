@@ -48,11 +48,12 @@ namespace MediocreBONK::ECS
     class EntityManager
     {
     public:
-        EntityManager(size_t maxEntities = 1000)
+        EntityManager(size_t maxEntities = 500)
             : maxEntities(maxEntities)
             , nextId(0)
             , cleanupTimer(0.f)
             , cleanupInterval(0.5f) // Cleanup every 0.5 seconds
+            , tagCacheDirty(true) // Start dirty to build cache on first update
         {
             entities.reserve(maxEntities); // Pre-allocate vector capacity
             Utils::Logger::info("EntityManager initialized with max entities: " + std::to_string(maxEntities));
@@ -92,6 +93,9 @@ namespace MediocreBONK::ECS
             Entity* ptr = entity.get();
             entities.push_back(std::move(entity));
 
+            // OPTIMIZATION: Mark cache dirty since we added an entity
+            tagCacheDirty = true;
+
             return ptr;
         }
 
@@ -116,6 +120,8 @@ namespace MediocreBONK::ECS
             if (entity)
             {
                 entity->setActive(false); // Mark inactive (not deleted!)
+                // OPTIMIZATION: Mark cache dirty since we deactivated an entity
+                tagCacheDirty = true;
             }
         }
 
@@ -125,6 +131,8 @@ namespace MediocreBONK::ECS
             if (entity)
             {
                 entity->setActive(false); // Mark inactive (pooled)
+                // OPTIMIZATION: Mark cache dirty since we deactivated an entity
+                tagCacheDirty = true;
             }
         }
 
@@ -217,17 +225,29 @@ namespace MediocreBONK::ECS
                 cleanupTimer = 0.f;
             }
 
-            // CACHING: Rebuild tag cache for fast tag-based queries
-            // Cache is rebuilt each frame because entities can change tags
-            tagCache.clear();
+            // OPTIMIZATION: Only rebuild tag cache when dirty (entities created/destroyed)
+            // This avoids rebuilding cache every frame (expensive with many entities)
+            if (tagCacheDirty)
+            {
+                tagCache.clear();
+                for (auto& entity : entities)
+                {
+                    if (entity->isActive())
+                    {
+                        if (!entity->tag.empty())
+                        {
+                            tagCache[entity->tag].push_back(entity.get());
+                        }
+                    }
+                }
+                tagCacheDirty = false;
+            }
+
+            // Update all active entities
             for (auto& entity : entities)
             {
                 if (entity->isActive())
                 {
-                    if (!entity->tag.empty())
-                    {
-                        tagCache[entity->tag].push_back(entity.get());
-                    }
                     entity->update(dt);
                 }
             }
@@ -256,6 +276,12 @@ namespace MediocreBONK::ECS
             Utils::Logger::info("Cleaned up " + std::to_string(beforeCount - afterCount) +
                                " inactive entities. Active: " + std::to_string(getEntityCount()) +
                                " Total: " + std::to_string(afterCount));
+
+            // OPTIMIZATION: Mark cache dirty after cleanup
+            if (beforeCount != afterCount)
+            {
+                tagCacheDirty = true;
+            }
         }
 
         // Render all active entities
@@ -305,7 +331,8 @@ namespace MediocreBONK::ECS
         float cleanupInterval;
 
         // CACHING: Tag-to-entities map for fast tag queries
-        // Rebuilt each frame (entities can change tags dynamically)
+        // Rebuilt only when dirty flag is set (entities created/destroyed)
         std::unordered_map<std::string, std::vector<Entity*>> tagCache;
+        bool tagCacheDirty;
     };
 }

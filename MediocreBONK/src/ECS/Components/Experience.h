@@ -59,9 +59,11 @@ namespace MediocreBONK::ECS::Components
     private:
         float calculateXPForLevel(int level)
         {
-            // Exponential XP curve: baseXP * (1.2 ^ level)
-            float baseXP = 10.f;
-            return baseXP * std::pow(1.2f, static_cast<float>(level));
+            // Exponential XP curve: baseXP * (growthRate ^ level)
+            // Balanced for slower early-game progression
+            float baseXP = 50.f;       // Increased from 10 (5x harder to level)
+            float growthRate = 1.5f;   // Increased from 1.2 (steeper curve)
+            return baseXP * std::pow(growthRate, static_cast<float>(level));
         }
 
         int currentLevel;

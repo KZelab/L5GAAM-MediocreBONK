@@ -116,26 +116,37 @@ namespace MediocreBONK::Systems
             float largeMagnetChance = 0.02f + largeMagnetBonus;
             
                 
-            if (roll < 0.25f)
+            if (roll < 0.45f)
             {
+                // Check if player's health is full
+                auto* playerHealth = player->getComponent<ECS::Components::Health>();
+                bool healthFull = playerHealth && (playerHealth->currentHealth >= playerHealth->maxHealth);
+
+                if (healthFull)
+                {
+                    // Always spawn small magnet if health is full
+                    return Entities::PowerUpType::SmallMagnet;
+                }
+                
                 if (Utils::Random::chance(0.5f))
                 {
-					//lets check if health is full, if so, always spawn small magnet instead
                     return Entities::PowerUpType::HealthPack;
                 }
                 else
                 {
                     return Entities::PowerUpType::SmallMagnet;
-				}
+                }
+
             }
-            else if (roll < 0.45f)
-                return Entities::PowerUpType::DamageBoost;
             else if (roll < 0.60f)
-                return Entities::PowerUpType::SpeedBoost;
-            else if (roll < 0.72f)
-                return Entities::PowerUpType::XPBoost;
-            else if (roll < 0.80f + largeMagnetChance)
+                return Entities::PowerUpType::DamageBoost;
+            else if (roll < 0.75f + largeMagnetChance)
                 return Entities::PowerUpType::LargeMagnet;
+            else if (roll < 0.85f)
+                return Entities::PowerUpType::SpeedBoost;
+            else if (roll < 0.95f)
+                return Entities::PowerUpType::XPBoost;
+
             else
                 return Entities::PowerUpType::InvulnerabilityBoost;
         }

@@ -37,18 +37,6 @@ namespace MediocreBONK::UI
         {
             gameTime += dt.asSeconds();
 
-            // Update FPS counter using real wall clock time
-            frameCount++;
-            float elapsedTime = fpsClock.getElapsedTime().asSeconds();
-
-            if (elapsedTime >= fpsUpdateInterval)
-            {
-                // Calculate average FPS over the actual elapsed time
-                fps = frameCount / elapsedTime;
-                frameCount = 0;
-                fpsClock.restart();
-            }
-
             // Update buff display
             if (buffDisplay)
             {
@@ -66,6 +54,17 @@ namespace MediocreBONK::UI
 
         void render(sf::RenderWindow& window)
         {
+            // Update FPS counter - count actual rendered frames
+            frameCount++;
+            float elapsedTime = fpsClock.getElapsedTime().asSeconds();
+
+            if (elapsedTime >= fpsUpdateInterval)
+            {
+                fps = frameCount / elapsedTime;
+                frameCount = 0;
+                fpsClock.restart();
+            }
+
             auto* health = player->getComponent<ECS::Components::Health>();
             auto* experience = player->getComponent<ECS::Components::Experience>();
 

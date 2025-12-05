@@ -24,7 +24,7 @@ namespace MediocreBONK::Entities
     public:
         Player(ECS::Entity* entity, const sf::Vector2f& startPosition)
             : entity(entity)
-            , moveSpeed(800)
+            , moveSpeed(500)
             , dashSpeed(2000.f)
             , dashDuration(0.2f)
             , dashCooldown(1.f)
@@ -47,7 +47,7 @@ namespace MediocreBONK::Entities
             ECS::Components::WeaponData weaponData;
             weaponData.name = "Basic Shot";
             weaponData.damage = 10.f;
-            weaponData.fireRate = 3.f; // 3 shots per second
+            weaponData.fireRate = 4.f; // 3 shots per second
             weaponData.projectileSpeed = 500.f;
             weaponData.piercing = 1;
             weaponData.projectileCount = 1;

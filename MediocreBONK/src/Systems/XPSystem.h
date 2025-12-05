@@ -28,6 +28,64 @@ namespace MediocreBONK::Systems
 
         void spawnXPGem(const sf::Vector2f& position, float xpValue)
         {
+            // OPTIMIZATION: Check for nearby gems to merge with (reduces entity count)
+            const float MERGE_RADIUS = 25.f; // Merge gems within this radius
+            const float MERGE_RADIUS_SQUARED = MERGE_RADIUS * MERGE_RADIUS;
+
+            auto xpGems = entityManager->getEntitiesByTag("XPGem");
+            for (auto* existingGem : xpGems)
+            {
+                auto* existingTransform = existingGem->getComponent<ECS::Components::Transform>();
+                auto* existingPickup = existingGem->getComponent<ECS::Components::XPPickup>();
+
+                if (existingTransform && existingPickup)
+                {
+                    sf::Vector2f delta = existingTransform->position - position;
+                    float distSquared = delta.x * delta.x + delta.y * delta.y;
+
+                    if (distSquared <= MERGE_RADIUS_SQUARED)
+                    {
+                        // Merge into existing gem by increasing its value
+                        existingPickup->addValue(xpValue);
+                        return; // Don't spawn new gem, we merged instead
+                    }
+                }
+            }
+
+            // OPTIMIZATION: Cap max XP gems to prevent performance issues
+            const size_t MAX_XP_GEMS = 150;
+            if (xpGems.size() >= MAX_XP_GEMS)
+            {
+                // Find oldest gem (furthest from player) and replace it
+                auto* playerTransform = player->getComponent<ECS::Components::Transform>();
+                if (playerTransform)
+                {
+                    ECS::Entity* furthestGem = nullptr;
+                    float maxDistSquared = 0.f;
+
+                    for (auto* gem : xpGems)
+                    {
+                        auto* gemTransform = gem->getComponent<ECS::Components::Transform>();
+                        if (gemTransform)
+                        {
+                            sf::Vector2f delta = gemTransform->position - playerTransform->position;
+                            float distSquared = delta.x * delta.x + delta.y * delta.y;
+
+                            if (distSquared > maxDistSquared)
+                            {
+                                maxDistSquared = distSquared;
+                                furthestGem = gem;
+                            }
+                        }
+                    }
+
+                    if (furthestGem)
+                    {
+                        furthestGem->setActive(false);
+                    }
+                }
+            }
+
             auto* gem = entityManager->createEntity();
             if (!gem)
                 return;
@@ -40,7 +98,7 @@ namespace MediocreBONK::Systems
             auto* collider = gem->addComponent<ECS::Components::Collider>(ECS::Components::ColliderShape::Circle, 10.f);
 
             // Add some randomness to spawn position (scatter effect)
-            sf::Vector2f scatter = Utils::Random::insideCircle(20.f);
+            sf::Vector2f scatter = Utils::Random::insideCircle(10.f);
             transform->position += scatter;
         }
 
@@ -57,16 +115,13 @@ namespace MediocreBONK::Systems
 
             for (auto* gem : xpGems)
             {
-                auto* gemTransform = gem->getComponent<ECS::Components::Transform>();
                 auto* xpPickup = gem->getComponent<ECS::Components::XPPickup>();
 
-                if (!gemTransform || !xpPickup)
+                if (!xpPickup)
                     continue;
 
-                float distance = Utils::Math::distance(playerTransform->position, gemTransform->position);
-
-                // Check if player is close enough to collect
-                if (distance <= xpPickup->getPickupRange())
+                // Check if gem is ready for pickup (distance already calculated in XPPickup::update)
+                if (xpPickup->isReadyForPickup())
                 {
                     // Add XP to player
                     float xpValue = xpPickup->getValue();

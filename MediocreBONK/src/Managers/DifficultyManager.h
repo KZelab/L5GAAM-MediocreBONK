@@ -88,8 +88,8 @@ namespace MediocreBONK::Managers
             int difficultyLevel = static_cast<int>(gameTime / 30.f);
 
             // More aggressive scaling: +50% per level instead of 15%
-            float healthScaleFactor = 1.3f + (difficultyLevel * 0.50f);
-            float damageScaleFactor = 1.2f + (difficultyLevel * 0.50f);
+            float healthScaleFactor = 1.5f + (difficultyLevel * 0.50f);
+            float damageScaleFactor = 2.f + (difficultyLevel * 0.50f);
 
             // Speed scaling: starts at 1.1x, increases by 16% per level (much faster progression)
             float speedScaleFactor = 1.1f + (difficultyLevel * 0.16f);
